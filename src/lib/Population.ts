@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import Organism from './Organism';
 
 export default class Population {
@@ -54,22 +56,12 @@ export default class Population {
 	}
 
 	public reproduce() {
-		const maxFitness = this.best.fitness;
-
-		let totalWeight = 0;
-
-		this.population.forEach((organism) => {
-			const weight = Math.round(organism.fitness / maxFitness * 100);
-			organism.weight = weight;
-			totalWeight += weight;
-		});
-
 		const newPopulation = [];
 
 		for (let i = 0; i < this.size; i++) {
 			// pick two parents
-			const partnerA = this.population.find(this.weightedRandom(totalWeight));
-			const partnerB = this.population.find(this.weightedRandom(totalWeight));
+			const partnerA = this.rejectionSample();
+			const partnerB = this.rejectionSample();
 			// crossover
 			const child = partnerA.crossover(partnerB);
 			// mutation
@@ -83,12 +75,14 @@ export default class Population {
 		this.generations++;
 	}
 
-	private weightedRandom(totalWeight: number) {
-		let random = Math.floor(Math.random() * (totalWeight + 1));
+	// https://en.wikipedia.org/wiki/Rejection_sampling
+	private rejectionSample(): Organism {
+		const randomOrganism: Organism = _.sample(this.population);
 
-		return (organism: Organism) => {
-			random -= organism.weight;
-			return random <= 0;
-		};
+		if (Math.random() * this.best.fitness <= randomOrganism.fitness) {
+			return randomOrganism;
+		}
+
+		return this.rejectionSample();
 	}
 }

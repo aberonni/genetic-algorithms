@@ -2,7 +2,6 @@ import IGene from './IGene';
 
 export default abstract class Organism {
 	public fitness: number;
-	public weight: number;
 	public genes: IGene[];
 
 	protected size: number;
