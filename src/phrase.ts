@@ -15,7 +15,7 @@ function randomGene() {
 }
 
 // used to calculate the fitness of a gene set
-function calculateFitness(genes) {
+function calculateFitness(genes: string[]) {
 	return genes.reduce((fitness, gene, i) => {
 		if (target.charAt(i) !== gene) {
 			return fitness;

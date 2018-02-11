@@ -11,7 +11,11 @@ class Population {
 	private idealFitness: number;
 	private size: number;
 
-	constructor(population, mutationRate, idealFitness) {
+	constructor(
+		population: Organism[],
+		mutationRate: number,
+		idealFitness: number
+	) {
 		this.population = population;
 		this.mutationRate = mutationRate;
 		this.idealFitness = idealFitness;
@@ -26,7 +30,7 @@ class Population {
 
 	public updateFitness() {
 		let totalFitness = 0;
-		let bestOrganism;
+		let bestOrganism: Organism;
 
 		this.population.forEach((organism) => {
 			organism.updateFitness();
@@ -79,11 +83,11 @@ class Population {
 		this.generations++;
 	}
 
-	private weightedRandom(totalWeight, weightProp = 'weight') {
+	private weightedRandom(totalWeight: number) {
 		let random = Math.floor(Math.random() * (totalWeight + 1));
 
-		return (organism) => {
-			random -= organism[weightProp];
+		return (organism: Organism) => {
+			random -= organism.weight;
 			return random <= 0;
 		};
 	}

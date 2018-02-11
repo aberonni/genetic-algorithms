@@ -7,7 +7,12 @@ class Organism {
 	private calculateFitness: (genes: string[]) => number;
 	private genes: string[];
 
-	constructor(size, newGene, calculateFitness, genes = null) {
+	constructor(
+		size: number,
+		newGene: () => string,
+		calculateFitness: (genes: string[]) => number,
+		genes: string[] = null
+	) {
 		this.size = size;
 		this.newGene = newGene;
 		this.calculateFitness = calculateFitness;
@@ -33,7 +38,7 @@ class Organism {
 		this.fitness = this.calculateFitness(this.genes);
 	}
 
-	public crossover(partner) {
+	public crossover(partner: Organism) {
 		const genes = [];
 
 		for (let i = 0; i < this.size; i++) {
@@ -47,7 +52,7 @@ class Organism {
 		return new Organism(this.size, this.newGene, this.calculateFitness, genes);
 	}
 
-	public mutate(mutationRate) {
+	public mutate(mutationRate: number) {
 		for (let i = 0; i < this.size; i++) {
 			if (Math.random() < mutationRate) {
 				this.genes[i] = this.newGene();
