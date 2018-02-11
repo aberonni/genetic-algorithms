@@ -8,30 +8,39 @@ const target = 'To be or not to be';
 const populationSize = 200;
 const mutationRate = 0.01;
 
-const charSet = 'ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz. '.split('');
-
 class CharGene implements IGene {
+	public static charSet = 'ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz. '.split('');
+
 	public readonly value: string;
 
 	constructor() {
-		this.value = _.sample(charSet);
+		this.value = _.sample(CharGene.charSet);
 	}
 }
+// tslint:disable-next-line: max-classes-per-file
+class PhraseOrganism extends Organism {
+	protected calculateFitness(): number {
+		return this.genes.reduce((fitness, gene, i) => {
+			if (target.charAt(i) !== gene.value) {
+				return fitness;
+			}
+			return fitness + 1;
+		}, 0);
+	}
 
-// used to calculate the fitness of a gene set
-function calculateFitness(genes: CharGene[]): number {
-	return genes.reduce((fitness, gene, i) => {
-		if (target.charAt(i) !== gene.value) {
-			return fitness;
-		}
-		return fitness + 1;
-	}, 0);
+	protected getRandomGene(): IGene {
+		return new CharGene();
+	}
+
+	protected fromGenes(genes: IGene[]): PhraseOrganism {
+		return new PhraseOrganism(genes.length, genes);
+	}
 }
 
 const organisms = [];
 
 for (let i = 0; i < populationSize; i++) {
-	organisms[i] = new Organism(target.length, CharGene, calculateFitness);
+	organisms[i] = new PhraseOrganism(target.length);
 }
 
 const p = new Population(organisms, mutationRate, target.length);

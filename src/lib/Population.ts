@@ -1,6 +1,6 @@
 import Organism from './Organism';
 
-class Population {
+export default class Population {
 	public generations: number;
 	public complete: boolean;
 	public averageFitness: number;
@@ -92,5 +92,3 @@ class Population {
 		};
 	}
 }
-
-export default Population;

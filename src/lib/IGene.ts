@@ -1,5 +1,3 @@
-interface IGene {
+export default interface IGene {
 	readonly value: any;
 }
-
-export default IGene;

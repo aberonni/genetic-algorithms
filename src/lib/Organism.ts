@@ -1,23 +1,17 @@
 import IGene from './IGene';
 
-class Organism {
+export default abstract class Organism {
 	public fitness: number;
 	public weight: number;
+	public genes: IGene[];
 
-	private size: number;
-	private geneClass: { new(): IGene };
-	private calculateFitness: (genes: IGene[]) => number;
-	private genes: IGene[];
+	protected size: number;
 
 	constructor(
 		size: number,
-		geneClass: { new(): IGene },
-		calculateFitness: (genes: IGene[]) => number,
 		genes: IGene[] = null
 	) {
 		this.size = size;
-		this.geneClass = geneClass;
-		this.calculateFitness = calculateFitness;
 
 		this.fitness = 0;
 
@@ -37,7 +31,7 @@ class Organism {
 	}
 
 	public updateFitness(): void {
-		this.fitness = this.calculateFitness(this.genes);
+		this.fitness = this.calculateFitness();
 	}
 
 	public crossover(partner: Organism): Organism {
@@ -51,7 +45,7 @@ class Organism {
 			}
 		}
 
-		return new Organism(this.size, this.geneClass, this.calculateFitness, genes);
+		return this.fromGenes(genes);
 	}
 
 	public mutate(mutationRate: number): void {
@@ -62,9 +56,7 @@ class Organism {
 		}
 	}
 
-	private getRandomGene(): IGene {
-		return new this.geneClass();
-	}
+	protected abstract getRandomGene(): IGene;
+	protected abstract calculateFitness(): number;
+	protected abstract fromGenes(genes: IGene[]): Organism;
 }
-
-export default Organism;
