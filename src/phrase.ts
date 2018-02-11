@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 
+import IGene from './lib/IGene';
 import Organism from './lib/Organism';
 import Population from './lib/Population';
 
@@ -9,15 +10,18 @@ const mutationRate = 0.01;
 
 const charSet = 'ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz. '.split('');
 
-// used to generate genes randomly
-function randomGene() {
-	return _.sample(charSet);
+class CharGene implements IGene {
+	public readonly value: string;
+
+	constructor() {
+		this.value = _.sample(charSet);
+	}
 }
 
 // used to calculate the fitness of a gene set
-function calculateFitness(genes: string[]) {
+function calculateFitness(genes: CharGene[]): number {
 	return genes.reduce((fitness, gene, i) => {
-		if (target.charAt(i) !== gene) {
+		if (target.charAt(i) !== gene.value) {
 			return fitness;
 		}
 		return fitness + 1;
@@ -27,7 +31,7 @@ function calculateFitness(genes: string[]) {
 const organisms = [];
 
 for (let i = 0; i < populationSize; i++) {
-	organisms[i] = new Organism(target.length, randomGene, calculateFitness);
+	organisms[i] = new Organism(target.length, CharGene, calculateFitness);
 }
 
 const p = new Population(organisms, mutationRate, target.length);

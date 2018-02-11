@@ -1,20 +1,22 @@
+import IGene from './IGene';
+
 class Organism {
 	public fitness: number;
 	public weight: number;
 
 	private size: number;
-	private newGene: () => string;
-	private calculateFitness: (genes: string[]) => number;
-	private genes: string[];
+	private geneClass: { new(): IGene };
+	private calculateFitness: (genes: IGene[]) => number;
+	private genes: IGene[];
 
 	constructor(
 		size: number,
-		newGene: () => string,
-		calculateFitness: (genes: string[]) => number,
-		genes: string[] = null
+		geneClass: { new(): IGene },
+		calculateFitness: (genes: IGene[]) => number,
+		genes: IGene[] = null
 	) {
 		this.size = size;
-		this.newGene = newGene;
+		this.geneClass = geneClass;
 		this.calculateFitness = calculateFitness;
 
 		this.fitness = 0;
@@ -23,22 +25,22 @@ class Organism {
 			this.genes = [];
 
 			for (let i = 0; i < size; i++) {
-				this.genes[i] = this.newGene();
+				this.genes[i] = this.getRandomGene();
 			}
 		} else {
 			this.genes = genes;
 		}
 	}
 
-	public toString() {
-		return this.genes.join('');
+	public toString(): string {
+		return this.genes.map((g) => g.value).join('');
 	}
 
-	public updateFitness() {
+	public updateFitness(): void {
 		this.fitness = this.calculateFitness(this.genes);
 	}
 
-	public crossover(partner: Organism) {
+	public crossover(partner: Organism): Organism {
 		const genes = [];
 
 		for (let i = 0; i < this.size; i++) {
@@ -49,15 +51,19 @@ class Organism {
 			}
 		}
 
-		return new Organism(this.size, this.newGene, this.calculateFitness, genes);
+		return new Organism(this.size, this.geneClass, this.calculateFitness, genes);
 	}
 
-	public mutate(mutationRate: number) {
+	public mutate(mutationRate: number): void {
 		for (let i = 0; i < this.size; i++) {
 			if (Math.random() < mutationRate) {
-				this.genes[i] = this.newGene();
+				this.genes[i] = this.getRandomGene();
 			}
 		}
+	}
+
+	private getRandomGene(): IGene {
+		return new this.geneClass();
 	}
 }
 
