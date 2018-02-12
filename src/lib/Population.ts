@@ -11,6 +11,7 @@ export default class Population {
 	private population: Organism[];
 	private mutationRate: number;
 	private idealFitness: number;
+	private totalFitness: number;
 	private size: number;
 
 	constructor(
@@ -31,13 +32,13 @@ export default class Population {
 	}
 
 	public updateFitness() {
-		let totalFitness = 0;
+		this.totalFitness = 0;
 		let bestOrganism: Organism;
 
 		this.population.forEach((organism) => {
 			organism.updateFitness();
 
-			totalFitness += organism.fitness;
+			this.totalFitness += organism.fitness;
 
 			if (!bestOrganism || organism.fitness > bestOrganism.fitness) {
 				bestOrganism = organism;
@@ -52,7 +53,7 @@ export default class Population {
 			this.complete = true;
 		}
 
-		this.averageFitness = totalFitness / this.size;
+		this.averageFitness = this.totalFitness / this.size;
 	}
 
 	public reproduce() {
@@ -60,8 +61,8 @@ export default class Population {
 
 		for (let i = 0; i < this.size; i++) {
 			// pick two parents
-			const partnerA = this.rejectionSample();
-			const partnerB = this.rejectionSample();
+			const partnerA = this.weightedRandom();
+			const partnerB = this.weightedRandom();
 			// crossover
 			const child = partnerA.crossover(partnerB);
 			// mutation
@@ -75,14 +76,15 @@ export default class Population {
 		this.generations++;
 	}
 
-	// https://en.wikipedia.org/wiki/Rejection_sampling
-	private rejectionSample(): Organism {
-		const randomOrganism: Organism = _.sample(this.population);
+	private weightedRandom(): Organism {
+		let r = Math.random() * this.totalFitness;
 
-		if (Math.random() * this.best.fitness <= randomOrganism.fitness) {
-			return randomOrganism;
+		for (let i = 0; i < this.size; i++) {
+			r -= this.population[i].fitness;
+
+			if (r <= 0) {
+				return this.population[i];
+			}
 		}
-
-		return this.rejectionSample();
 	}
 }
