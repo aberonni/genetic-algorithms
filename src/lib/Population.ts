@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 
-import Organism from './Organism';
+import { Organism, OrganismConstructor } from './Organism';
+import IGene from './IGene';
 
 export default class Population {
 	public generations: number;
@@ -8,22 +9,26 @@ export default class Population {
 	public averageFitness: number;
 	public best: Organism;
 
-	private population: Organism[];
-	private mutationRate: number;
-	private idealFitness: number;
+	private population: Organism[] = [];
 	private totalFitness: number;
+
+	private Species: OrganismConstructor;
 	private size: number;
+	private mutationRate: number;
 
 	constructor(
-		population: Organism[],
-		mutationRate: number,
-		idealFitness: number
+		Species: OrganismConstructor,
+		speciesSize: number,
+		size: number,
+		mutationRate: number
 	) {
-		this.population = population;
+		this.Species = Species;
+		this.size = size;
 		this.mutationRate = mutationRate;
-		this.idealFitness = idealFitness;
 
-		this.size = population.length;
+		for (let i = 0; i < size; i++) {
+			this.population[i] = new this.Species(speciesSize);
+		}
 
 		this.generations = 1;
 		this.complete = false;
@@ -49,10 +54,6 @@ export default class Population {
 
 		this.best = bestOrganism;
 
-		if (this.idealFitness && this.best.fitness === this.idealFitness) {
-			this.complete = true;
-		}
-
 		this.averageFitness = this.totalFitness / this.size;
 	}
 
@@ -64,7 +65,8 @@ export default class Population {
 			const partnerA = this.weightedRandom();
 			const partnerB = this.weightedRandom();
 			// crossover
-			const child = partnerA.crossover(partnerB);
+			const childGenes = partnerA.crossover(partnerB);
+			const child = new this.Species(childGenes.length, childGenes);
 			// mutation
 			child.mutate(this.mutationRate);
 			// add child to population

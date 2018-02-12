@@ -1,6 +1,10 @@
 import IGene from './IGene';
 
-export default abstract class Organism {
+export interface OrganismConstructor {
+    new (size: number, genes?: IGene[]): Organism;
+}
+
+export abstract class Organism {
 	public fitness: number;
 	public genes: IGene[];
 
@@ -33,7 +37,7 @@ export default abstract class Organism {
 		this.fitness = this.calculateFitness();
 	}
 
-	public crossover(partner: Organism): Organism {
+	public crossover(partner: Organism): IGene[] {
 		const genes = [];
 
 		for (let i = 0; i < this.size; i++) {
@@ -44,7 +48,7 @@ export default abstract class Organism {
 			}
 		}
 
-		return this.fromGenes(genes);
+		return genes;
 	}
 
 	public mutate(mutationRate: number): void {
@@ -57,5 +61,4 @@ export default abstract class Organism {
 
 	protected abstract getRandomGene(): IGene;
 	protected abstract calculateFitness(): number;
-	protected abstract fromGenes(genes: IGene[]): Organism;
 }

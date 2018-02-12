@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import IGene from './lib/IGene';
-import Organism from './lib/Organism';
+import { Organism } from './lib/Organism';
 import Population from './lib/Population';
 
 const target = 'To be or not to be';
@@ -31,19 +31,11 @@ class PhraseOrganism extends Organism {
 	protected getRandomGene(): IGene {
 		return new CharGene();
 	}
-
-	protected fromGenes(genes: IGene[]): PhraseOrganism {
-		return new PhraseOrganism(genes.length, genes);
-	}
 }
 
-const organisms = [];
+const organismSize = target.length;
 
-for (let i = 0; i < populationSize; i++) {
-	organisms[i] = new PhraseOrganism(target.length);
-}
-
-const p = new Population(organisms, mutationRate, target.length);
+const p = new Population(PhraseOrganism, organismSize, populationSize, mutationRate);
 
 function tick() {
 	// selection
@@ -55,7 +47,8 @@ function tick() {
 		average fitness: ${p.averageFitness}
 	`);
 
-	if (p.complete) {
+	if (p.best.toString() === target) {
+		// we have reached max fitness
 		process.exit(0);
 	}
 
