@@ -1,7 +1,7 @@
 import IGene from './IGene';
 
-export interface OrganismConstructor {
-    new (size: number, genes?: IGene[]): Organism;
+export interface IOrganismConstructor {
+	new (size: number, genes?: IGene[]): Organism;
 }
 
 export abstract class Organism {

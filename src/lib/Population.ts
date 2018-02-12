@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
-import { Organism, OrganismConstructor } from './Organism';
 import IGene from './IGene';
+import { IOrganismConstructor, Organism } from './Organism';
 
 export default class Population {
 	public generations: number;
@@ -12,12 +12,12 @@ export default class Population {
 	private population: Organism[] = [];
 	private totalFitness: number;
 
-	private Species: OrganismConstructor;
+	private Species: IOrganismConstructor;
 	private size: number;
 	private mutationRate: number;
 
 	constructor(
-		Species: OrganismConstructor,
+		Species: IOrganismConstructor,
 		speciesSize: number,
 		size: number,
 		mutationRate: number
